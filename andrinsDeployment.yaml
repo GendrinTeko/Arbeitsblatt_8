@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mein-deployment
+  #namespace: ####
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mein-app
+  template:
+    metadata:
+      labels:
+        app: mein-app
+    spec:
+      containers:
+      - name: mein-container
+        image: ubuntu
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 80
+          initialDelaySeconds: 3
+          periodSeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
